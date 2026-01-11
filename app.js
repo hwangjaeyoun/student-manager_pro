@@ -373,7 +373,7 @@ function loadStudents() {
             // 1-1. 모바일용 (테이블 행)
             mobileTableHtml += `
                 <tr>
-                    <td><input type="checkbox" name="student-chk-m" value="${s.phone}" checked></td>
+                    <td><input type="checkbox" name="student-chk-m" value="${s.phone}" ></td>
                     <td>${s.name}</td>
                     <td style="font-size:12px; color:#666;">${s.phone}</td>
                     <td>
