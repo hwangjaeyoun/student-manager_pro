@@ -135,26 +135,15 @@ function loadClasses() {
             const locTextOnly = d.location || '-';
             const feeText = d.fee ? Number(d.fee).toLocaleString() + '원' : '0원';
 
-            // --- [수정된 부분] 날짜 포맷팅 로직 (26.1.3~2.2) ---
-            let dateRangeText = `${d.start} ~ ${d.end}`; // 기본값
+            // 날짜 포맷팅 (26.1.3~2.2)
+            let dateRangeText = `${d.start} ~ ${d.end}`; 
             if(d.start && d.end) {
-                const s = d.start.split('-'); // [2026, 01, 03]
-                const e = d.end.split('-');   // [2026, 02, 02]
-                
-                // 시작일: 26.1.3 (parseInt로 01 -> 1 변환)
+                const s = d.start.split('-'); 
+                const e = d.end.split('-');   
                 const startFmt = `${s[0].slice(2)}.${parseInt(s[1])}.${parseInt(s[2])}`;
-                
-                let endFmt = '';
-                if(s[0] === e[0]) {
-                    // 같은 연도면 연도 생략: 2.2
-                    endFmt = `${parseInt(e[1])}.${parseInt(e[2])}`;
-                } else {
-                    // 다른 연도면 연도 포함: 26.1.15
-                    endFmt = `${e[0].slice(2)}.${parseInt(e[1])}.${parseInt(e[2])}`;
-                }
+                let endFmt = (s[0] === e[0]) ? `${parseInt(e[1])}.${parseInt(e[2])}` : `${e[0].slice(2)}.${parseInt(e[1])}.${parseInt(e[2])}`;
                 dateRangeText = `${startFmt}~${endFmt}`;
             }
-            // ----------------------------------------------------
 
             // 1. 모바일용 (카드)
             const card = document.createElement('div');
@@ -186,7 +175,8 @@ function loadClasses() {
                 <td style="font-weight:bold;">${d.name}</td>
                 <td>${locTextOnly}</td>
                 <td style="color:#555;">${feeText}</td>
-                <td style="font-size:13px; color:#666;">${dateRangeText}</td> <td>${d.dayName} ${d.time}</td>
+                <td style="font-size:13px; color:#666;">${dateRangeText}</td> 
+                <td>${d.dayName} ${d.time}</td>
                 <td><span id="${countIdPc}" style="background:#f0f0f0; padding:2px 6px; border-radius:10px; font-size:12px;">-</span></td>
                 <td>
                     <button class="btn-outline" style="padding:2px 5px; font-size:12px;" onclick="event.stopPropagation(); editClass('${id}')">✏️</button>
@@ -307,38 +297,26 @@ function regenerateSchedules(classId, className, location, color, start, end, da
 }
 
 // 6. [탭1] 수강생 관리
-// 1. [수정됨] selectClass 함수
 function selectClass(id, data) {
     console.log("Class Selected:", id); 
     currentClassId = id;
     currentClassData = data;
-    
-    // 타이틀 변경 (span 태그로 변경됨에 주의)
-    const titleElem = document.getElementById('current-class-title');
-    if(titleElem) titleElem.innerText = data.name;
-    
+    document.getElementById('current-class-title').innerText = data.name;
     document.getElementById('student-actions').style.display = 'block';
     
-    // [추가됨] 모바일 화면 전환 로직
     if(window.innerWidth < 768) {
-        document.querySelector('.split-layout').classList.add('mobile-view-mode');
-        // 화면 최상단으로 스크롤 이동
-        window.scrollTo(0, 0);
+        document.querySelector('.right-panel').scrollIntoView({behavior:"smooth"});
+        document.querySelector('.split-layout').classList.add('mobile-view-mode'); // 모바일 화면전환
     }
     
     loadStudents();
 }
 
-// 2. [신규 추가] 뒤로가기 함수
+// 모바일 뒤로가기
 function backToClassList() {
     document.querySelector('.split-layout').classList.remove('mobile-view-mode');
-    
-    // 선택 상태 초기화 (선택사항 - 필요시 주석 해제)
-    // currentClassId = null;
-    // document.getElementById('current-class-title').innerText = '클래스를 선택하세요';
-    // document.getElementById('student-actions').style.display = 'none';
-    // document.getElementById('student-list-mobile').innerHTML = '';
 }
+
 function openStudentModal() {
     if(!currentClassId) return alert('먼저 클래스를 선택해주세요.');
     
@@ -353,6 +331,7 @@ function openStudentModal() {
     openModal('modal-student');
 }
 
+// [수정됨] 수강생 리스트: 모바일(체크O), PC(체크X)
 function loadStudents() {
     const mobileList = document.getElementById('student-list-mobile');
     const pcList = document.getElementById('student-list-pc');
@@ -366,36 +345,45 @@ function loadStudents() {
     db.collection('students').where('classId', '==', currentClassId).get().then(snap => {
         
         if(snap.empty) {
-            const emptyMsg = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">등록된 수강생이 없습니다.</td></tr>';
+            const emptyMsg = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#999;">등록된 수강생이 없습니다.</td></tr>';
             pcList.innerHTML = emptyMsg;
             mobileList.innerHTML = '<div style="padding:20px; text-align:center; color:#999;">등록된 수강생이 없습니다.</div>';
             return;
         }
+
+        // 1. 모바일용 귀여운 테이블 생성 (Header) - 체크박스 유지
+        let mobileTableHtml = `
+            <table class="cute-table">
+                <thead>
+                    <tr>
+                        <th width="10%">v</th>
+                        <th width="20%">이름</th>
+                        <th width="40%">전화번호</th>
+                        <th width="30%">관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
 
         snap.forEach(doc => {
             const s = doc.data();
             const id = doc.id;
             currentStudents.push(s);
 
-            // 1. 모바일용 (카드)
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.innerHTML = `
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span style="font-weight:bold; font-size:16px;">${s.name}</span>
-                    <span style="color:#666;">${s.phone}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:13px; color:#888;">${s.memo || '-'}</span>
-                    <div>
-                        <button class="btn-outline" style="font-size:11px; padding:2px 5px; margin-right:3px;" onclick="editStudent('${id}')">수정</button>
-                        <button class="btn-outline" style="font-size:11px; color:red; border-color:red; padding:2px 5px;" onclick="deleteStudent('${id}')">삭제</button>
-                    </div>
-                </div>
+            // 1-1. 모바일용 (테이블 행)
+            mobileTableHtml += `
+                <tr>
+                    <td><input type="checkbox" name="student-chk-m" value="${s.phone}" checked></td>
+                    <td>${s.name}</td>
+                    <td style="font-size:12px; color:#666;">${s.phone}</td>
+                    <td>
+                        <button class="btn-outline" style="font-size:11px; padding:2px;" onclick="editStudent('${id}')">✏️</button>
+                        <button class="btn-outline" style="font-size:11px; color:red; border-color:red; padding:2px;" onclick="deleteStudent('${id}')">🗑️</button>
+                    </td>
+                </tr>
             `;
-            mobileList.appendChild(div);
 
-            // 2. PC용 (테이블 행)
+            // 2. PC용 (테이블 행) - [수정됨] 체크박스 제거
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="font-weight:bold;">${s.name}</td>
@@ -408,9 +396,12 @@ function loadStudents() {
             `;
             pcList.appendChild(tr);
         });
+
+        mobileTableHtml += `</tbody></table>`;
+        mobileList.innerHTML = mobileTableHtml;
+
     }).catch(error => {
         console.error("Error fetching students:", error);
-        alert("수강생 리스트를 불러오는데 실패했습니다. 콘솔을 확인해주세요.");
     });
 }
 
@@ -467,10 +458,16 @@ function saveStudent() {
     }
 }
 
+// [수정됨] 모바일에서만 체크박스 확인
 function sendGroupSMS() {
-    if(currentStudents.length === 0) return alert('수강생이 없습니다.');
-    const phones = currentStudents.map(s => s.phone).join(',');
-    const msg = `[${currentClassData.name} - 단체 공지] 내용: `;
+    // 모바일용 체크박스만 확인
+    let checkboxes = document.querySelectorAll('input[name="student-chk-m"]:checked');
+
+    if(checkboxes.length === 0) return alert('문자를 보낼 수강생을 선택해주세요.');
+
+    const phones = Array.from(checkboxes).map(cb => cb.value).join(',');
+    const msg = `[${currentClassData.name}-단체공지] 내용: `;
+    
     location.href = `sms:${phones}?body=${encodeURIComponent(msg)}`;
 }
 
