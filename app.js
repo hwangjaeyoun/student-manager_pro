@@ -23,9 +23,10 @@ let currentClassData = null;
 let currentStudents = [];
 let currentDate = new Date();
 let selectedDateForSchedule = null;
+let selectedStudentIdForManage = null; // [신규] 관리용 선택된 학생 ID
 
-// 파스텔 색상 5종
-const PASTEL_COLORS = ['#FFD1DC', '#B5EAD7', '#FFDAC1', '#C7CEEA', '#FFF5BA'];
+// 파스텔 색상 5종 (블루/쿨톤 계열)
+const PASTEL_COLORS = ['#D1E9F6', '#A0C4FF', '#BDE0FE', '#C7CEEA', '#E2F0CB'];
 
 // 3. 탭 및 모달 관리
 function switchTab(tabId) {
@@ -135,7 +136,7 @@ function loadClasses() {
             const locTextOnly = d.location || '-';
             const feeText = d.fee ? Number(d.fee).toLocaleString() + '원' : '0원';
 
-            // 날짜 포맷팅 (26.1.3~2.2)
+            // 날짜 포맷팅
             let dateRangeText = `${d.start} ~ ${d.end}`; 
             if(d.start && d.end) {
                 const s = d.start.split('-'); 
@@ -331,7 +332,7 @@ function openStudentModal() {
     openModal('modal-student');
 }
 
-// [수정됨] 수강생 리스트: 전화걸기 버튼 추가
+// [수정됨] 수강생 리스트: 비고 포함 + 왕 큰 전화 버튼 + 관리 버튼
 function loadStudents() {
     const mobileList = document.getElementById('student-list-mobile');
     const pcList = document.getElementById('student-list-pc');
@@ -351,15 +352,14 @@ function loadStudents() {
             return;
         }
 
-        // 1. 모바일용 귀여운 테이블 생성 (Header)
+        // 1. 모바일용 귀여운 테이블 (Header)
         let mobileTableHtml = `
             <table class="cute-table">
                 <thead>
                     <tr>
                         <th width="10%">v</th>
-                        <th width="20%">이름</th>
-                        <th width="40%">전화번호</th>
-                        <th width="30%">관리</th>
+                        <th width="50%">정보</th>
+                        <th width="40%">관리</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -370,16 +370,22 @@ function loadStudents() {
             const id = doc.id;
             currentStudents.push(s);
 
-            // 1-1. 모바일용 (테이블 행) - [추가됨] 전화걸기 버튼(📞)
+            const memoText = s.memo ? `<span class="mobile-memo">${s.memo}</span>` : '';
+
+            // 1-1. 모바일용 (테이블 행) - [수정] 비고 추가, 버튼 변경
             mobileTableHtml += `
                 <tr>
                     <td><input type="checkbox" name="student-chk-m" value="${s.phone}"></td>
-                    <td>${s.name}</td>
-                    <td style="font-size:12px; color:#666;">${s.phone}</td>
+                    <td style="text-align:left; padding-left:10px;">
+                        <span class="mobile-name">${s.name}</span>
+                        <span class="mobile-phone">${s.phone}</span>
+                        ${memoText}
+                    </td>
                     <td>
-                        <a href="tel:${s.phone}" class="btn-outline" style="text-decoration:none; display:inline-block; font-size:11px; padding:2px 5px; color:green; border-color:green;">📞</a>
-                        <button class="btn-outline" style="font-size:11px; padding:2px;" onclick="editStudent('${id}')">✏️</button>
-                        <button class="btn-outline" style="font-size:11px; color:red; border-color:red; padding:2px;" onclick="deleteStudent('${id}')">🗑️</button>
+                        <div style="display:flex; justify-content:center; align-items:center;">
+                            <a href="tel:${s.phone}" class="btn-big-phone">📞</a>
+                            <button class="btn-manage-sm" onclick="openManageModal('${id}')">관리</button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -404,6 +410,24 @@ function loadStudents() {
     }).catch(error => {
         console.error("Error fetching students:", error);
     });
+}
+
+// [신규] 관리 모달 열기
+function openManageModal(id) {
+    selectedStudentIdForManage = id;
+    openModal('modal-student-manage');
+}
+
+// [신규] 관리 모달 -> 정보 수정
+function openEditFromManage() {
+    closeModal('modal-student-manage');
+    editStudent(selectedStudentIdForManage);
+}
+
+// [신규] 관리 모달 -> 삭제
+function deleteFromManage() {
+    closeModal('modal-student-manage');
+    deleteStudent(selectedStudentIdForManage);
 }
 
 function editStudent(id) {

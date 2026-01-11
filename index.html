@@ -63,7 +63,6 @@
                     </div>
                     
                     <div id="student-list-container">
-                        
                         <div id="student-list-mobile" class="mobile-show"></div>
                         
                         <div class="table-responsive pc-show">
@@ -159,6 +158,20 @@
             <input type="tel" id="std-phone" placeholder="전화번호">
             <input type="text" id="std-memo" placeholder="비고">
             <button class="btn-save" onclick="saveStudent()">저장하기</button>
+        </div>
+    </div>
+
+    <div id="modal-student-manage" class="modal">
+        <div class="modal-content" style="max-width: 300px; text-align: center;">
+            <h4 style="margin-bottom: 20px;">수강생 관리 <span class="close" onclick="closeModal('modal-student-manage')">&times;</span></h4>
+            <input type="hidden" id="manage-student-id">
+            
+            <button class="btn-outline" style="width: 100%; margin-bottom: 10px; padding: 12px; font-size: 16px;" onclick="openEditFromManage()">
+                ✏️ 정보 수정
+            </button>
+            <button class="btn-outline" style="width: 100%; padding: 12px; font-size: 16px; color: red; border-color: red;" onclick="deleteFromManage()">
+                🗑️ 수강생 삭제
+            </button>
         </div>
     </div>
 

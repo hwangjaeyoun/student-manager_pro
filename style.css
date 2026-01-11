@@ -1,10 +1,10 @@
 :root {
-    --bg-color: #FDFBF7;
-    --primary: #FFD1DC;
-    --primary-dark: #FFB7C5;
-    --accent: #B5EAD7;
-    --text: #555;
-    --border: #E0E0E0;
+    --bg-color: #F0F8FF;       
+    --primary: #D1E9F6;        
+    --primary-dark: #74C0FC;   
+    --accent: #E3F2FD;         
+    --text: #495057;           
+    --border: #DAE4ED;         
 }
 
 body { margin: 0; background-color: var(--bg-color); font-family: 'Apple SD Gothic Neo', sans-serif; color: var(--text); }
@@ -12,7 +12,7 @@ body { margin: 0; background-color: var(--bg-color); font-family: 'Apple SD Goth
 /* 네비게이션 */
 .navbar { display: flex; justify-content: space-around; background: white; padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
 .nav-item { padding: 5px 10px; cursor: pointer; color: #888; }
-.nav-item.active { font-weight: bold; color: #FF8BA7; border-bottom: 2px solid #FF8BA7; }
+.nav-item.active { font-weight: bold; color: #4A90E2; border-bottom: 2px solid #4A90E2; }
 
 /* 레이아웃 */
 .container { max-width: 1400px; margin: 0 auto; padding: 15px; }
@@ -20,7 +20,7 @@ body { margin: 0; background-color: var(--bg-color); font-family: 'Apple SD Goth
 .content-section.active { display: block; }
 .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
-/* 카드 리스트 (클래스 모바일용) */
+/* 카드 리스트 (모바일용) */
 .card-list { display: flex; flex-direction: column; gap: 10px; }
 .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border-left: 5px solid var(--primary); cursor: pointer; transition: 0.2s; }
 .card:active { transform: scale(0.98); }
@@ -71,42 +71,73 @@ body { margin: 0; background-color: var(--bg-color); font-family: 'Apple SD Goth
 
 /* --- 테이블 디자인 (PC용) --- */
 .class-table { width: 100%; border-collapse: collapse; font-size: 14px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-.class-table thead { background-color: #f8f9fa; border-bottom: 2px solid #eee; }
-.class-table th { padding: 12px 10px; text-align: left; color: #666; font-weight: bold; white-space: nowrap; }
+.class-table thead { background-color: #f1f8ff; border-bottom: 2px solid #e1eef6; }
+.class-table th { padding: 12px 10px; text-align: left; color: #555; font-weight: bold; white-space: nowrap; }
 .class-table td { padding: 12px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
 .class-table tbody tr { cursor: pointer; transition: background-color 0.2s; }
-.class-table tbody tr:hover { background-color: #f1fcfc; }
+.class-table tbody tr:hover { background-color: #e3f2fd; }
 
-/* --- [NEW] 모바일 귀여운 테이블 스타일 --- */
+/* --- [수정됨] 모바일 귀여운 테이블 스타일 --- */
 .cute-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 13px;
+    font-size: 14px;
     background: white;
-    border-radius: 15px; /* 둥글게 */
+    border-radius: 15px; 
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     margin-top: 5px;
 }
 .cute-table thead {
-    background-color: var(--primary); /* 파스텔 핑크 배경 */
+    background-color: var(--primary); 
     color: #555;
 }
 .cute-table th {
-    padding: 10px 5px;
+    padding: 12px 8px;
     font-weight: bold;
     border-bottom: 2px solid #fff;
-}
-.cute-table td {
-    padding: 10px 5px;
-    border-bottom: 1px solid #eee;
     text-align: center;
 }
-.cute-table tbody tr:last-child td {
-    border-bottom: none;
+.cute-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+    vertical-align: middle;
 }
-/* 체크박스 크기 키움 */
+.cute-table tbody tr:last-child td { border-bottom: none; }
+
+/* 모바일 텍스트 스타일 */
+.mobile-name { font-weight: bold; font-size: 15px; display: block; margin-bottom: 2px;}
+.mobile-phone { font-size: 13px; color: #666; display: block; margin-bottom: 2px; }
+.mobile-memo { font-size: 12px; color: #888; background: #f8f9fa; padding: 2px 5px; border-radius: 4px; display: inline-block;}
+
+/* 왕 큰 전화 버튼 */
+.btn-big-phone {
+    background-color: #E3F2FD;
+    border: 1px solid #90CAF9;
+    color: #1E88E5;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    text-decoration: none;
+    margin-right: 5px;
+}
+
+/* 관리 버튼 */
+.btn-manage-sm {
+    background: #f1f3f5;
+    border: 1px solid #ced4da;
+    color: #495057;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
 input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
 /* 캘린더 */
