@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>클래스 매니저</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-item active" onclick="switchTab('tab-class')">클래스 관리</div>
+        <div class="nav-item" onclick="switchTab('tab-calendar')">일정 캘린더</div>
+        <div class="nav-item" onclick="switchTab('tab-material')">재료비 관리</div>
+    </nav>
+
+    <div class="container">
+        <div id="tab-class" class="content-section active">
+            <div class="split-layout">
+                
+                <div class="panel left-panel">
+                    <div class="panel-header">
+                        <h3>나의 클래스</h3>
+                        <button class="btn-primary-sm" onclick="openClassModalForCreate()">+ 등록</button>
+                    </div>
+                    
+                    <div id="class-list-container">
+                        <div id="class-list-mobile" class="card-list mobile-show"></div>
+
+                        <div class="table-responsive pc-show">
+                            <table class="class-table">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">색</th>
+                                        <th width="25%">클래스명</th>
+                                        <th width="20%">장소</th>
+                                        <th width="10%">기본재료비</th>
+                                        <th width="10%">기간</th>
+                                        <th width="10%">시간</th>
+                                        <th width="10%">인원</th>
+                                        <th width="10%">관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="class-list-pc"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel right-panel">
+                    <div class="panel-header">
+                        <h3 id="current-class-title">클래스를 선택하세요</h3>
+                        <div id="student-actions" style="display:none;">
+                            <button class="btn-secondary-sm mobile-only" onclick="sendGroupSMS()">✉ 문자</button>
+                            <button class="btn-primary-sm" onclick="openStudentModal()">+ 수강생</button>
+                        </div>
+                    </div>
+                    
+                    <div id="student-list-container">
+                        <div id="student-list-mobile" class="card-list mobile-show"></div>
+                        
+                        <div class="table-responsive pc-show">
+                            <table class="class-table">
+                                <thead>
+                                    <tr>
+                                        <th width="25%">이름</th>
+                                        <th width="30%">전화번호</th>
+                                        <th width="30%">비고</th>
+                                        <th width="15%">관리</th> </tr>
+                                </thead>
+                                <tbody id="student-list-pc"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-calendar" class="content-section">
+            <div class="calendar-header">
+                <button onclick="changeMonth(-1)">◀</button>
+                <h2 id="cal-month-title">2026.01</h2>
+                <button onclick="changeMonth(1)">▶</button>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
+        </div>
+
+        <div id="tab-material" class="content-section">
+            <div class="material-header">
+                <h3>재료비 정산부</h3>
+                <button class="btn-outline" onclick="openModal('modal-material-master')">⚙️ 품목 설정</button>
+            </div>
+            <select id="material-class-select" class="full-select" onchange="loadMaterialLedger()">
+                <option value="">클래스를 선택해주세요</option>
+            </select>
+            <div id="ledger-list" class="ledger-container"></div>
+        </div>
+    </div>
+
+    <div id="modal-schedule-detail" class="modal">
+        <div class="modal-content">
+            <h4 id="schedule-date-title">날짜 상세 <span class="close" onclick="closeModal('modal-schedule-detail')">&times;</span></h4>
+            <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:15px; min-height:100px;">
+                <ul id="modal-schedule-list" class="simple-list"></ul>
+            </div>
+            <label style="font-size:14px; font-weight:bold;">수업 수동 등록</label>
+            <div class="row">
+                <select id="manual-class-select" style="margin-bottom:0;">
+                    <option value="">클래스 선택</option>
+                </select>
+                <button class="btn-primary-sm" style="width:80px;" onclick="addManualSchedule()">추가</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-class" class="modal">
+        <div class="modal-content">
+            <h4 id="modal-class-title">새 클래스 등록 <span class="close" onclick="closeModal('modal-class')">&times;</span></h4>
+            <input type="hidden" id="edit-class-id">
+            <input type="text" id="cls-name" placeholder="클래스명">
+            <input type="text" id="cls-location" placeholder="장소 (예: 301호)">
+            <div class="row">
+                <input type="date" id="cls-start"> ~ <input type="date" id="cls-end">
+            </div>
+            <div class="row">
+                <select id="cls-day">
+                    <option value="1">월요일</option>
+                    <option value="2">화요일</option>
+                    <option value="3">수요일</option>
+                    <option value="4">목요일</option>
+                    <option value="5">금요일</option>
+                    <option value="6">토요일</option>
+                    <option value="0">일요일</option>
+                </select>
+                <input type="time" id="cls-time">
+            </div>
+            <input type="number" id="cls-fee" placeholder="기본 재료비 (원)">
+            <label style="font-size:14px; color:#666;">클래스 색상</label>
+            <div id="color-palette" class="color-palette"></div>
+            <input type="hidden" id="cls-color">
+            <button class="btn-save" onclick="saveClass()">저장하기</button>
+        </div>
+    </div>
+
+    <div id="modal-student" class="modal">
+        <div class="modal-content">
+            <h4 id="modal-student-title">수강생 등록 <span class="close" onclick="closeModal('modal-student')">&times;</span></h4>
+            
+            <input type="hidden" id="std-class-id">
+            <input type="hidden" id="edit-student-id"> 
+
+            <input type="text" id="std-name" placeholder="이름">
+            <input type="tel" id="std-phone" placeholder="전화번호">
+            <input type="text" id="std-memo" placeholder="비고">
+            <button class="btn-save" onclick="saveStudent()">저장하기</button>
+        </div>
+    </div>
+
+    <div id="modal-material-master" class="modal">
+        <div class="modal-content">
+            <h4>판매 품목 관리 <span class="close" onclick="closeModal('modal-material-master')">&times;</span></h4>
+            <div class="row">
+                <input type="text" id="master-name" placeholder="품목명">
+                <input type="number" id="master-price" placeholder="단가">
+                <button class="btn-secondary-sm" onclick="saveMasterItem()">추가</button>
+            </div>
+            <ul id="master-list" class="simple-list"></ul>
+        </div>
+    </div>
+
+    <div id="modal-purchase" class="modal">
+        <div class="modal-content">
+            <h4>추가 재료 등록 <span class="close" onclick="closeModal('modal-purchase')">&times;</span></h4>
+            <input type="hidden" id="pur-student-id">
+            <label>구매 일자</label>
+            <input type="date" id="pur-date" class="full-input">
+            <label>품목</label>
+            <select id="pur-item-select" class="full-input" onchange="updatePriceInput()">
+                <option value="">선택하세요</option>
+            </select>
+            <label>금액</label>
+            <input type="number" id="pur-price" class="full-input">
+            <button class="btn-save" onclick="savePurchase()">등록하기</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
