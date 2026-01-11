@@ -331,7 +331,7 @@ function openStudentModal() {
     openModal('modal-student');
 }
 
-// [수정됨] 수강생 리스트: 모바일(체크O), PC(체크X)
+// [수정됨] 수강생 리스트: 전화걸기 버튼 추가
 function loadStudents() {
     const mobileList = document.getElementById('student-list-mobile');
     const pcList = document.getElementById('student-list-pc');
@@ -351,7 +351,7 @@ function loadStudents() {
             return;
         }
 
-        // 1. 모바일용 귀여운 테이블 생성 (Header) - 체크박스 유지
+        // 1. 모바일용 귀여운 테이블 생성 (Header)
         let mobileTableHtml = `
             <table class="cute-table">
                 <thead>
@@ -370,20 +370,21 @@ function loadStudents() {
             const id = doc.id;
             currentStudents.push(s);
 
-            // 1-1. 모바일용 (테이블 행)
+            // 1-1. 모바일용 (테이블 행) - [추가됨] 전화걸기 버튼(📞)
             mobileTableHtml += `
                 <tr>
-                    <td><input type="checkbox" name="student-chk-m" value="${s.phone}" ></td>
+                    <td><input type="checkbox" name="student-chk-m" value="${s.phone}"></td>
                     <td>${s.name}</td>
                     <td style="font-size:12px; color:#666;">${s.phone}</td>
                     <td>
+                        <a href="tel:${s.phone}" class="btn-outline" style="text-decoration:none; display:inline-block; font-size:11px; padding:2px 5px; color:green; border-color:green;">📞</a>
                         <button class="btn-outline" style="font-size:11px; padding:2px;" onclick="editStudent('${id}')">✏️</button>
                         <button class="btn-outline" style="font-size:11px; color:red; border-color:red; padding:2px;" onclick="deleteStudent('${id}')">🗑️</button>
                     </td>
                 </tr>
             `;
 
-            // 2. PC용 (테이블 행) - [수정됨] 체크박스 제거
+            // 2. PC용 (테이블 행)
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="font-weight:bold;">${s.name}</td>
