@@ -49,15 +49,40 @@ body { margin: 0; background-color: var(--bg-color); font-family: 'Apple SD Goth
 }
 
 /* --- 모바일 화면 설정 (768px 미만) --- */
+/* --- 모바일 화면 설정 (768px 미만) --- */
 @media (max-width: 767px) {
-    .split-layout { display: block; }
-    .left-panel { margin-bottom: 30px; }
-    .right-panel { border-top: 1px solid #eee; padding-top: 20px; }
+    .split-layout { display: block; position: relative; }
     
+    /* 기본 상태: 클래스 목록(Left)만 보임 */
+    .left-panel { display: block; width: 100%; }
+    .right-panel { display: none; width: 100%; }
+
+    /* [화면 전환] 클래스 선택 시 (.mobile-view-mode 클래스가 붙으면) */
+    .split-layout.mobile-view-mode .left-panel { display: none; }
+    .split-layout.mobile-view-mode .right-panel { 
+        display: block; 
+        animation: fadeIn 0.3s ease-in-out; /* 부드러운 전환 효과 */
+    }
+
+    /* 뒤로가기 버튼 스타일 */
+    .btn-back {
+        background: transparent;
+        border: none;
+        font-size: 18px;
+        color: #555;
+        padding-right: 10px;
+        cursor: pointer;
+    }
+    
+    /* PC 전용 요소 숨김 */
     .pc-show { display: none; }
     .mobile-show { display: flex; }
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 /* --- 테이블 디자인 (PC용) --- */
 .class-table { width: 100%; border-collapse: collapse; font-size: 14px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .class-table thead { background-color: #f8f9fa; border-bottom: 2px solid #eee; }

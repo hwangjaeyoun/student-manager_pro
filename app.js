@@ -307,20 +307,38 @@ function regenerateSchedules(classId, className, location, color, start, end, da
 }
 
 // 6. [탭1] 수강생 관리
+// 1. [수정됨] selectClass 함수
 function selectClass(id, data) {
     console.log("Class Selected:", id); 
     currentClassId = id;
     currentClassData = data;
-    document.getElementById('current-class-title').innerText = data.name;
+    
+    // 타이틀 변경 (span 태그로 변경됨에 주의)
+    const titleElem = document.getElementById('current-class-title');
+    if(titleElem) titleElem.innerText = data.name;
+    
     document.getElementById('student-actions').style.display = 'block';
     
+    // [추가됨] 모바일 화면 전환 로직
     if(window.innerWidth < 768) {
-        document.querySelector('.right-panel').scrollIntoView({behavior:"smooth"});
+        document.querySelector('.split-layout').classList.add('mobile-view-mode');
+        // 화면 최상단으로 스크롤 이동
+        window.scrollTo(0, 0);
     }
     
     loadStudents();
 }
 
+// 2. [신규 추가] 뒤로가기 함수
+function backToClassList() {
+    document.querySelector('.split-layout').classList.remove('mobile-view-mode');
+    
+    // 선택 상태 초기화 (선택사항 - 필요시 주석 해제)
+    // currentClassId = null;
+    // document.getElementById('current-class-title').innerText = '클래스를 선택하세요';
+    // document.getElementById('student-actions').style.display = 'none';
+    // document.getElementById('student-list-mobile').innerHTML = '';
+}
 function openStudentModal() {
     if(!currentClassId) return alert('먼저 클래스를 선택해주세요.');
     

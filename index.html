@@ -50,35 +50,35 @@
                     </div>
                 </div>
 
-                <div class="panel right-panel">
-                    <div class="panel-header">
-                        <h3 id="current-class-title">클래스를 선택하세요</h3>
-                        <div id="student-actions" style="display:none;">
-                            <button class="btn-secondary-sm mobile-only" onclick="sendGroupSMS()">✉ 문자</button>
-                            <button class="btn-primary-sm" onclick="openStudentModal()">+ 수강생</button>
-                        </div>
-                    </div>
-                    
-                    <div id="student-list-container">
-                        <div id="student-list-mobile" class="card-list mobile-show"></div>
-                        
-                        <div class="table-responsive pc-show">
-                            <table class="class-table">
-                                <thead>
-                                    <tr>
-                                        <th width="25%">이름</th>
-                                        <th width="30%">전화번호</th>
-                                        <th width="30%">비고</th>
-                                        <th width="15%">관리</th> </tr>
-                                </thead>
-                                <tbody id="student-list-pc"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="panel right-panel">
+    <div class="panel-header">
+        <h3 style="display:flex; align-items:center;">
+            <button class="btn-back mobile-only" onclick="backToClassList()">◀</button>
+            <span id="current-class-title">클래스를 선택하세요</span>
+        </h3>
+        <div id="student-actions" style="display:none;">
+            <button class="btn-secondary-sm mobile-only" onclick="sendGroupSMS()">✉ 문자</button>
+            <button class="btn-primary-sm" onclick="openStudentModal()">+ 수강생</button>
         </div>
-
+    </div>
+    
+    <div id="student-list-container">
+        <div id="student-list-mobile" class="card-list mobile-show"></div>
+        <div class="table-responsive pc-show">
+            <table class="class-table">
+                <thead>
+                    <tr>
+                        <th width="20%">이름</th>
+                        <th width="30%">전화번호</th>
+                        <th width="40%">비고</th>
+                        <th width="10%">관리</th>
+                    </tr>
+                </thead>
+                <tbody id="student-list-pc"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
         <div id="tab-calendar" class="content-section">
             <div class="calendar-header">
                 <button onclick="changeMonth(-1)">◀</button>
