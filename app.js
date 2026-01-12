@@ -25,8 +25,8 @@ let currentDate = new Date();
 let selectedDateForSchedule = null;
 let selectedStudentIdForManage = null;
 
-// [수정됨] 선명한 클래스 색상 (가독성 Up: 진한 코랄, 청록, 오렌지, 보라, 진한 파랑)
-const CLASS_COLORS = ['#FF6B6B', '#20C997', '#FD7E14', '#845EF7', '#339AF0'];
+// [수정됨] 밝은 파스텔 색상 (검정 글씨 가독성 확보용)
+const CLASS_COLORS = ['#FFD1DC', '#B5EAD7', '#FFDAC1', '#C7CEEA', '#FFF5BA', '#E2F0CB', '#FFC8DD'];
 
 // 3. 탭 및 모달 관리
 function switchTab(tabId) {
@@ -114,7 +114,6 @@ function openClassModalForEdit(id, data) {
     openModal('modal-class');
 }
 
-// [핵심] PC(테이블+재료비) 및 모바일(카드) 렌더링 함수
 function loadClasses() {
     const mobileList = document.getElementById('class-list-mobile');
     const pcList = document.getElementById('class-list-pc');
@@ -136,7 +135,6 @@ function loadClasses() {
             const locTextOnly = d.location || '-';
             const feeText = d.fee ? Number(d.fee).toLocaleString() + '원' : '0원';
 
-            // 날짜 포맷팅
             let dateRangeText = `${d.start} ~ ${d.end}`; 
             if(d.start && d.end) {
                 const s = d.start.split('-'); 
@@ -146,7 +144,6 @@ function loadClasses() {
                 dateRangeText = `${startFmt}~${endFmt}`;
             }
 
-            // 1. 모바일용 (카드)
             const card = document.createElement('div');
             card.className = 'card';
             card.style.borderLeftColor = d.color;
@@ -166,7 +163,6 @@ function loadClasses() {
             card.onclick = () => selectClass(id, d);
             mobileList.appendChild(card);
 
-            // 2. PC용 (테이블 행)
             const tr = document.createElement('tr');
             tr.style.cursor = 'pointer'; 
             tr.onclick = () => selectClass(id, d);
@@ -186,7 +182,6 @@ function loadClasses() {
             `;
             pcList.appendChild(tr);
 
-            // 3. 수강생 수 업데이트
             db.collection('students').where('classId', '==', id).get().then(sSnap => {
                 const count = `${sSnap.size}명`;
                 const mBadge = document.getElementById(countId);
@@ -204,7 +199,6 @@ function editClass(id) {
     });
 }
 
-// 클래스 저장 함수
 function saveClass() {
     const id = document.getElementById('edit-class-id').value;
     const name = document.getElementById('cls-name').value;
@@ -267,7 +261,6 @@ function deleteClass(id) {
     });
 }
 
-// 5. 일정 생성 로직
 function generateSchedules(classId, className, location, color, start, end, dayOfWeek, time) {
     let sDate = new Date(start);
     let eDate = new Date(end);
@@ -297,7 +290,6 @@ function regenerateSchedules(classId, className, location, color, start, end, da
     });
 }
 
-// 6. [탭1] 수강생 관리
 function selectClass(id, data) {
     console.log("Class Selected:", id); 
     currentClassId = id;
@@ -313,7 +305,6 @@ function selectClass(id, data) {
     loadStudents();
 }
 
-// 모바일 뒤로가기
 function backToClassList() {
     document.querySelector('.split-layout').classList.remove('mobile-view-mode');
 }
@@ -332,7 +323,6 @@ function openStudentModal() {
     openModal('modal-student');
 }
 
-// [수정됨] 수강생 리스트
 function loadStudents() {
     const mobileList = document.getElementById('student-list-mobile');
     const pcList = document.getElementById('student-list-pc');
@@ -352,7 +342,6 @@ function loadStudents() {
             return;
         }
 
-        // 1. 모바일용 귀여운 테이블 (Header)
         let mobileTableHtml = `
             <table class="cute-table">
                 <thead>
@@ -372,7 +361,6 @@ function loadStudents() {
 
             const memoText = s.memo ? `<span class="mobile-memo">${s.memo}</span>` : '';
 
-            // 1-1. 모바일용 (테이블 행)
             mobileTableHtml += `
                 <tr>
                     <td><input type="checkbox" name="student-chk-m" value="${s.phone}"></td>
@@ -390,7 +378,6 @@ function loadStudents() {
                 </tr>
             `;
 
-            // 2. PC용 (테이블 행)
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="font-weight:bold;">${s.name}</td>
@@ -491,7 +478,25 @@ function sendGroupSMS() {
     location.href = `sms:${phones}?body=${encodeURIComponent(msg)}`;
 }
 
-// 7. [탭2] 캘린더 로직
+// [신규 함수] 2026년 공휴일 목록 (양력 기준 하드코딩)
+function getHolidays(year) {
+    if (year !== 2026) return []; // 일단 2026년만 지원
+    return [
+        "2026-01-01", // 신정
+        "2026-02-17", "2026-02-18", "2026-02-19", // 설날 (대략)
+        "2026-03-01", // 삼일절
+        "2026-05-05", // 어린이날
+        "2026-05-24", // 부처님오신날 (대략)
+        "2026-06-06", // 현충일
+        "2026-08-15", // 광복절
+        "2026-09-25", "2026-09-26", "2026-09-27", // 추석 (대략)
+        "2026-10-03", // 개천절
+        "2026-10-09", // 한글날
+        "2026-12-25"  // 성탄절
+    ];
+}
+
+// 7. [탭2] 캘린더 로직 (수정됨: 요일 헤더 + 공휴일/주말 빨간색)
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid');
     grid.innerHTML = '';
@@ -500,7 +505,6 @@ function renderCalendar() {
     
     document.getElementById('cal-month-title').innerText = `${year}.${String(month+1).padStart(2,'0')}`;
     
-    // 요일 헤더
     const days = ['일', '월', '화', '수', '목', '금', '토'];
     days.forEach(day => {
         grid.innerHTML += `<div class="cal-day-header">${day}</div>`;
@@ -508,12 +512,19 @@ function renderCalendar() {
 
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
+    const holidays = getHolidays(year);
 
     for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="cal-cell"></div>`;
 
     for(let d=1; d<=lastDate; d++) {
         const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        grid.innerHTML += `<div class="cal-cell" id="day-${dateStr}" onclick="showDayDetail('${dateStr}')">
+        const dayOfWeek = new Date(dateStr).getDay();
+        
+        // [로직] 0(일요일) 또는 6(토요일) 또는 공휴일이면 'holiday' 클래스 추가
+        let isRedDay = (dayOfWeek === 0 || dayOfWeek === 6 || holidays.includes(dateStr));
+        const colorClass = isRedDay ? 'holiday' : '';
+
+        grid.innerHTML += `<div class="cal-cell ${colorClass}" id="day-${dateStr}" onclick="showDayDetail('${dateStr}')">
             <span>${d}</span>
             <div class="dots-area" id="dots-${dateStr}"></div>
         </div>`;
@@ -537,8 +548,8 @@ function loadSchedulesForMonth(year, month) {
                 const dot = document.createElement('span');
                 dot.className = 'cal-dot';
                 dot.style.backgroundColor = sch.color;
-                // [수정됨] 점 대신 이름 표시 (1~2글자)
-                dot.innerText = sch.className.substring(0, 5); 
+                // [수정됨] 첫 글자만 따오기
+                dot.innerText = sch.className.charAt(0);
                 area.appendChild(dot);
             }
         });
