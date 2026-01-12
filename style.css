@@ -84,39 +84,35 @@ input[type="checkbox"] { transform: scale(1.3); cursor: pointer; accent-color: v
 .calendar-header h2 { margin: 0; font-size: 20px; color: #333; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
 
-/* 요일 헤더: 토/일 빨간색 */
+/* 요일 헤더 */
 .cal-day-header { background: #f8f9fa; text-align: center; font-weight: bold; color: #333; padding: 10px 0; font-size: 14px; }
-.cal-day-header:nth-child(7n+1), /* 일요일 */
-.cal-day-header:nth-child(7n) {   /* 토요일 */
-    color: #E03131; background: #FFF5F5; 
-} 
+.cal-day-header:nth-child(7n+1), .cal-day-header:nth-child(7n) { color: #E03131; background: #FFF5F5; } 
 
 /* 날짜 칸 */
-.cal-cell { min-height: 90px; background: white; padding: 5px; font-size: 14px; font-weight: bold; color: #333; position: relative; cursor: pointer; transition: background 0.2s; }
+.cal-cell { min-height: 90px; background: white; padding: 2px; font-size: 14px; font-weight: bold; color: #333; position: relative; cursor: pointer; transition: background 0.2s; }
 .cal-cell:hover { background-color: #fafafa; }
-.cal-cell span { display: block; margin-bottom: 5px; }
+/* 날짜 숫자 위치 조정 */
+.cal-cell span { display: block; margin: 4px 0 4px 6px; font-size: 13px; } 
 
-/* 공휴일/주말 날짜 빨간색 */
 .cal-cell.holiday span { color: #E03131; }
 
-/* [수정됨] 캘린더 일정 (동그라미 텍스트 중앙 정렬 강화) */
-.dots-area { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; content-visibility: auto;}
+/* [수정됨] 캘린더 일정 바(Bar) 스타일 */
+.dots-area { display: flex; flex-direction: column; gap: 2px; padding: 0 2px; }
 .cal-dot { 
-    display: inline-flex; 
-    justify-content: center; 
-    align-items: center;
-    width: 22px; 
-    height: 22px; 
-    border-radius: 50%; 
-    color: #000 !important; 
+    display: block; 
+    width: 100%; 
+    padding: 2px 5px; 
+    border-radius: 3px; 
+    color: #333 !important; /* 검정 글씨 */
+    text-align: left; 
     font-size: 11px; 
-    font-weight: bold;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    
-    /* [핵심 수정] 글자 수직 중앙 정렬 보정 */
-    line-height: 1; 
-    padding: 0;
-    padding-top: 2px; /* 한글 폰트 기준 시각적 중앙 맞춤 */
+    font-weight: normal; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; /* 글자 넘치면 ... 처리 */
+    box-sizing: border-box;
+    line-height: 1.4;
+    border-left: 3px solid rgba(0,0,0,0.1); /* 왼쪽에 살짝 진한 띠 */
 }
 
 /* 재료비 장부 등 기타 */
