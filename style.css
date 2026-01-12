@@ -79,40 +79,60 @@ body { margin: 0; background-color: var(--bg-color); font-family: 'Pretendard', 
 .btn-manage-sm { background: #fff; border: 1px solid #ccc; color: #333; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
 input[type="checkbox"] { transform: scale(1.3); cursor: pointer; accent-color: var(--primary); }
 
-/* --- 캘린더 스타일 --- */
+/* --- 캘린더 스타일 (고정폭 적용) --- */
 .calendar-header { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
 .calendar-header h2 { margin: 0; font-size: 20px; color: #333; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+
+/* [수정] 그리드 레이아웃 고정 */
+.calendar-grid { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 1px; 
+    background: var(--border); 
+    border: 1px solid var(--border);
+    table-layout: fixed; /* 내용물 크기에 상관없이 등분 */
+}
 
 /* 요일 헤더 */
 .cal-day-header { background: #f8f9fa; text-align: center; font-weight: bold; color: #333; padding: 10px 0; font-size: 14px; }
 .cal-day-header:nth-child(7n+1), .cal-day-header:nth-child(7n) { color: #E03131; background: #FFF5F5; } 
 
-/* 날짜 칸 */
-.cal-cell { min-height: 90px; background: white; padding: 2px; font-size: 14px; font-weight: bold; color: #333; position: relative; cursor: pointer; transition: background 0.2s; }
+/* [수정] 날짜 칸: 높이 고정 및 오버플로우 숨김 */
+.cal-cell { 
+    height: 90px; /* 높이를 고정값으로 설정 */
+    background: white; 
+    padding: 2px; 
+    font-size: 14px; 
+    font-weight: bold; 
+    color: #333; 
+    position: relative; 
+    cursor: pointer; 
+    transition: background 0.2s; 
+    overflow: hidden; /* 칸을 넘어가는 내용은 숨김 */
+}
 .cal-cell:hover { background-color: #fafafa; }
-/* 날짜 숫자 위치 조정 */
 .cal-cell span { display: block; margin: 4px 0 4px 6px; font-size: 13px; } 
-
 .cal-cell.holiday span { color: #E03131; }
 
-/* [수정됨] 캘린더 일정 바(Bar) 스타일 */
+/* [수정] 캘린더 일정 바: 말줄임표(...) 적용 */
 .dots-area { display: flex; flex-direction: column; gap: 2px; padding: 0 2px; }
 .cal-dot { 
     display: block; 
     width: 100%; 
-    padding: 2px 5px; 
+    padding: 2px 4px; 
     border-radius: 3px; 
-    color: #333 !important; /* 검정 글씨 */
+    color: #333 !important;
     text-align: left; 
-    font-size: 11px; 
+    font-size: 11px; /* 폰트 사이즈 조절 */
     font-weight: normal; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; /* 글자 넘치면 ... 처리 */
     box-sizing: border-box;
     line-height: 1.4;
-    border-left: 3px solid rgba(0,0,0,0.1); /* 왼쪽에 살짝 진한 띠 */
+    border-left: 3px solid rgba(0,0,0,0.1);
+    
+    /* 핵심: 한 줄 넘어가면 ... 처리 */
+    white-space: nowrap;      /* 줄바꿈 금지 */
+    overflow: hidden;         /* 넘치는 부분 숨김 */
+    text-overflow: ellipsis;  /* ... 으로 표시 */
 }
 
 /* 재료비 장부 등 기타 */
