@@ -23,10 +23,10 @@ let currentClassData = null;
 let currentStudents = [];
 let currentDate = new Date();
 let selectedDateForSchedule = null;
-let selectedStudentIdForManage = null; // [신규] 관리용 선택된 학생 ID
+let selectedStudentIdForManage = null;
 
-// 파스텔 색상 5종 (블루/쿨톤 계열)
-const PASTEL_COLORS = ['#D1E9F6', '#A0C4FF', '#BDE0FE', '#C7CEEA', '#E2F0CB'];
+// [수정됨] 선명한 클래스 색상 (가독성 Up: 진한 코랄, 청록, 오렌지, 보라, 진한 파랑)
+const CLASS_COLORS = ['#FF6B6B', '#20C997', '#FD7E14', '#845EF7', '#339AF0'];
 
 // 3. 탭 및 모달 관리
 function switchTab(tabId) {
@@ -59,12 +59,12 @@ function initColorPalette(selectedColor) {
     
     let targetColor = selectedColor;
     if(!targetColor) {
-        const randomIdx = Math.floor(Math.random() * PASTEL_COLORS.length);
-        targetColor = PASTEL_COLORS[randomIdx];
+        const randomIdx = Math.floor(Math.random() * CLASS_COLORS.length);
+        targetColor = CLASS_COLORS[randomIdx];
     }
     input.value = targetColor;
 
-    PASTEL_COLORS.forEach((color) => {
+    CLASS_COLORS.forEach((color) => {
         const div = document.createElement('div');
         div.className = 'color-swatch';
         div.style.backgroundColor = color;
@@ -332,7 +332,7 @@ function openStudentModal() {
     openModal('modal-student');
 }
 
-// [수정됨] 수강생 리스트: 비고 포함 + 왕 큰 전화 버튼 + 관리 버튼
+// [수정됨] 수강생 리스트
 function loadStudents() {
     const mobileList = document.getElementById('student-list-mobile');
     const pcList = document.getElementById('student-list-pc');
@@ -372,7 +372,7 @@ function loadStudents() {
 
             const memoText = s.memo ? `<span class="mobile-memo">${s.memo}</span>` : '';
 
-            // 1-1. 모바일용 (테이블 행) - [수정] 비고 추가, 버튼 변경
+            // 1-1. 모바일용 (테이블 행)
             mobileTableHtml += `
                 <tr>
                     <td><input type="checkbox" name="student-chk-m" value="${s.phone}"></td>
@@ -412,19 +412,16 @@ function loadStudents() {
     });
 }
 
-// [신규] 관리 모달 열기
 function openManageModal(id) {
     selectedStudentIdForManage = id;
     openModal('modal-student-manage');
 }
 
-// [신규] 관리 모달 -> 정보 수정
 function openEditFromManage() {
     closeModal('modal-student-manage');
     editStudent(selectedStudentIdForManage);
 }
 
-// [신규] 관리 모달 -> 삭제
 function deleteFromManage() {
     closeModal('modal-student-manage');
     deleteStudent(selectedStudentIdForManage);
@@ -483,9 +480,7 @@ function saveStudent() {
     }
 }
 
-// [수정됨] 모바일에서만 체크박스 확인
 function sendGroupSMS() {
-    // 모바일용 체크박스만 확인
     let checkboxes = document.querySelectorAll('input[name="student-chk-m"]:checked');
 
     if(checkboxes.length === 0) return alert('문자를 보낼 수강생을 선택해주세요.');
@@ -505,6 +500,12 @@ function renderCalendar() {
     
     document.getElementById('cal-month-title').innerText = `${year}.${String(month+1).padStart(2,'0')}`;
     
+    // 요일 헤더
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    days.forEach(day => {
+        grid.innerHTML += `<div class="cal-day-header">${day}</div>`;
+    });
+
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
 
@@ -536,7 +537,8 @@ function loadSchedulesForMonth(year, month) {
                 const dot = document.createElement('span');
                 dot.className = 'cal-dot';
                 dot.style.backgroundColor = sch.color;
-                dot.innerText = sch.className.charAt(0);
+                // [수정됨] 점 대신 이름 표시 (1~2글자)
+                dot.innerText = sch.className.substring(0, 5); 
                 area.appendChild(dot);
             }
         });
