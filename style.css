@@ -79,7 +79,7 @@ body { margin: 0; background-color: var(--bg-color); font-family: 'Pretendard', 
 .btn-manage-sm { background: #fff; border: 1px solid #ccc; color: #333; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
 input[type="checkbox"] { transform: scale(1.3); cursor: pointer; accent-color: var(--primary); }
 
-/* --- 캘린더 스타일 (수정됨) --- */
+/* --- 캘린더 스타일 --- */
 .calendar-header { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
 .calendar-header h2 { margin: 0; font-size: 20px; color: #333; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
@@ -96,10 +96,10 @@ input[type="checkbox"] { transform: scale(1.3); cursor: pointer; accent-color: v
 .cal-cell:hover { background-color: #fafafa; }
 .cal-cell span { display: block; margin-bottom: 5px; }
 
-/* [New] 공휴일/주말 날짜 빨간색 */
+/* 공휴일/주말 날짜 빨간색 */
 .cal-cell.holiday span { color: #E03131; }
 
-/* [수정됨] 캘린더 일정 (동그라미) */
+/* [수정됨] 캘린더 일정 (동그라미 텍스트 중앙 정렬 강화) */
 .dots-area { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; content-visibility: auto;}
 .cal-dot { 
     display: inline-flex; 
@@ -107,11 +107,16 @@ input[type="checkbox"] { transform: scale(1.3); cursor: pointer; accent-color: v
     align-items: center;
     width: 22px; 
     height: 22px; 
-    border-radius: 50%; /* 동그라미 */
-    color: #000 !important; /* 검정 글씨 */
+    border-radius: 50%; 
+    color: #000 !important; 
     font-size: 11px; 
     font-weight: bold;
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    
+    /* [핵심 수정] 글자 수직 중앙 정렬 보정 */
+    line-height: 1; 
+    padding: 0;
+    padding-top: 2px; /* 한글 폰트 기준 시각적 중앙 맞춤 */
 }
 
 /* 재료비 장부 등 기타 */
